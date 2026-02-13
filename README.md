@@ -13,7 +13,7 @@ cmux wraps the worktree lifecycle into a single command.
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/craigmulligan/cmux/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/craigsc/cmux/main/install.sh | sh
 ```
 
 Or manually — download `cmux.sh` and source it in your shell config (`~/.bashrc` or `~/.zshrc`):
