@@ -12,21 +12,31 @@
 #   cmux rm [branch]      — Remove worktree (no args = current worktree)
 #   cmux rm --all         — Remove ALL worktrees (requires confirmation)
 #   cmux init [--replace] — Generate .cmux/setup hook using Claude
+#   cmux update           — Update cmux to the latest version
+#   cmux version          — Show current version
+
+_CMUX_UPDATE_URL="https://raw.githubusercontent.com/craigsc/cmux/main"
+CMUX_VERSION="unknown"
+[[ -f "$HOME/.cmux/VERSION" ]] && CMUX_VERSION="$(<"$HOME/.cmux/VERSION")"
 
 cmux() {
   local cmd="$1"
   shift 2>/dev/null
 
+  _cmux_check_update
+
   case "$cmd" in
-    new)   _cmux_new "$@" ;;
-    start) _cmux_start "$@" ;;
-    cd)    _cmux_cd "$@" ;;
-    ls)    _cmux_ls "$@" ;;
-    merge) _cmux_merge "$@" ;;
-    rm)    _cmux_rm "$@" ;;
-    init)  _cmux_init "$@" ;;
+    new)     _cmux_new "$@" ;;
+    start)   _cmux_start "$@" ;;
+    cd)      _cmux_cd "$@" ;;
+    ls)      _cmux_ls "$@" ;;
+    merge)   _cmux_merge "$@" ;;
+    rm)      _cmux_rm "$@" ;;
+    init)    _cmux_init "$@" ;;
+    update)  _cmux_update "$@" ;;
+    version) echo "cmux $CMUX_VERSION" ;;
     *)
-      echo "Usage: cmux <new|start|cd|ls|merge|rm|init> [branch]"
+      echo "Usage: cmux <new|start|cd|ls|merge|rm|init|update> [branch]"
       echo ""
       echo "  new <branch>     Create worktree, run setup hook, launch claude"
       echo "  start <branch>   Launch claude -c in existing worktree"
@@ -36,6 +46,8 @@ cmux() {
       echo "  rm [branch]      Remove worktree (no args = current)"
       echo "  rm --all         Remove ALL worktrees (requires confirmation)"
       echo "  init [--replace] Generate .cmux/setup hook using Claude"
+      echo "  update           Update cmux to the latest version"
+      echo "  version          Show current version"
       return 1
       ;;
   esac
@@ -82,6 +94,43 @@ _cmux_spinner_stop() {
   wait "$_CMUX_SPINNER_PID" 2>/dev/null
   printf "\b \n"
   unset _CMUX_SPINNER_PID
+}
+
+_cmux_check_update() {
+  local cache_dir="$HOME/.cmux"
+  local version_file="$cache_dir/.latest_version"
+  local check_file="$cache_dir/.last_check"
+
+  # Show notice if a newer version is known
+  if [[ -f "$version_file" ]]; then
+    local latest
+    latest="$(<"$version_file")"
+    if [[ -n "$latest" && "$latest" != "$CMUX_VERSION" ]]; then
+      printf 'cmux: update available (%s → %s). Run "cmux update" to upgrade.\n' \
+        "$CMUX_VERSION" "$latest"
+    fi
+  fi
+
+  # Throttle: check at most once per day (86400 seconds)
+  local now
+  now="$(date +%s)"
+  if [[ -f "$check_file" ]]; then
+    local last_check
+    last_check="$(<"$check_file")"
+    if (( now - last_check < 86400 )); then
+      return
+    fi
+  fi
+
+  # Background fetch — no shell startup cost
+  [[ -n "$ZSH_VERSION" ]] && setopt localoptions nomonitor
+  {
+    local v
+    v="$(curl -fsSL "${_CMUX_UPDATE_URL}/VERSION" 2>/dev/null | tr -d '[:space:]')"
+    [[ -n "$v" ]] && printf '%s' "$v" > "$version_file"
+    printf '%s' "$now" > "$check_file"
+  } &>/dev/null &
+  disown 2>/dev/null
 }
 
 # ── Subcommands ──────────────────────────────────────────────────────
@@ -560,6 +609,34 @@ PROMPT
   done
 }
 
+_cmux_update() {
+  local install_path="$HOME/.cmux/cmux.sh"
+
+  echo "Checking for updates..."
+  local remote_version
+  remote_version="$(curl -fsSL "${_CMUX_UPDATE_URL}/VERSION" 2>/dev/null | tr -d '[:space:]')"
+
+  if [[ -z "$remote_version" ]]; then
+    echo "Failed to check for updates (network error?)."
+    return 1
+  fi
+
+  if [[ "$remote_version" == "$CMUX_VERSION" ]]; then
+    echo "cmux is already up to date ($CMUX_VERSION)."
+    return 0
+  fi
+
+  echo "Updating cmux ($CMUX_VERSION → $remote_version)..."
+  if curl -fsSL "${_CMUX_UPDATE_URL}/cmux.sh" -o "$install_path"; then
+    printf '%s' "$remote_version" > "$HOME/.cmux/VERSION"
+    source "$install_path"
+    echo "cmux updated to $CMUX_VERSION."
+  else
+    echo "Failed to download update."
+    return 1
+  fi
+}
+
 # ── Completions ──────────────────────────────────────────────────────
 
 _cmux_worktree_names() {
@@ -581,6 +658,8 @@ if [[ -n "$ZSH_VERSION" ]]; then
       'merge:Merge worktree branch into main'
       'rm:Remove worktree'
       'init:Generate .cmux/setup hook'
+      'update:Update cmux to latest version'
+      'version:Show current version'
     )
     if (( CURRENT == 2 )); then
       _describe 'cmux command' subcmds
@@ -609,7 +688,7 @@ elif [[ -n "$BASH_VERSION" ]]; then
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     if (( COMP_CWORD == 1 )); then
-      COMPREPLY=( $(compgen -W "new start cd ls merge rm init" -- "$cur") )
+      COMPREPLY=( $(compgen -W "new start cd ls merge rm init update version" -- "$cur") )
     elif (( COMP_CWORD == 2 )); then
       case "$prev" in
         start|cd|merge)

@@ -4,7 +4,7 @@ set -e
 
 REPO="craigsc/cmux"
 BRANCH="main"
-RAW_URL="https://raw.githubusercontent.com/$REPO/$BRANCH/cmux.sh"
+RAW_BASE="https://raw.githubusercontent.com/$REPO/$BRANCH"
 
 INSTALL_DIR="$HOME/.cmux"
 INSTALL_PATH="$INSTALL_DIR/cmux.sh"
@@ -12,7 +12,8 @@ INSTALL_PATH="$INSTALL_DIR/cmux.sh"
 # Download
 mkdir -p "$INSTALL_DIR"
 echo "Downloading cmux..."
-curl -fsSL "$RAW_URL" -o "$INSTALL_PATH"
+curl -fsSL "$RAW_BASE/cmux.sh" -o "$INSTALL_PATH"
+curl -fsSL "$RAW_BASE/VERSION" | tr -d '[:space:]' > "$INSTALL_DIR/VERSION"
 
 # Detect shell rc file
 case "$SHELL" in

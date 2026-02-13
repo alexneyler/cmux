@@ -14,22 +14,9 @@ cmux wraps the worktree lifecycle into a single simple command and makes it effo
 
 ## Install
 
-### Easy install
-
 ```sh
 curl -fsSL https://raw.githubusercontent.com/craigsc/cmux/main/install.sh | sh
 ```
-
-### Or manual install
-
-1. Download `cmux.sh`
-2. Source it in your shell config (`~/.bashrc` or `~/.zshrc`):
-
-```sh
-source /path/to/cmux.sh
-```
-
-3. Run `cmux init` in your project folder to generate a setup hook
 
 ## Usage
 
@@ -42,6 +29,8 @@ cmux ls — List worktrees
 cmux merge [branch] — Merge worktree branch into main checkout
 cmux rm [branch] — Remove worktree (no args = current)
 cmux init — Generate .cmux/setup hook using Claude
+cmux update — Update cmux to the latest version
+cmux version — Show current version
 
 ```
 
