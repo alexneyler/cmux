@@ -2,7 +2,7 @@
 
 Worktree lifecycle manager for parallel [Claude Code](https://docs.anthropic.com/en/docs/claude-code) sessions.
 
-Run multiple Claude agents in parallel on the same repo — each in its own git worktree with isolated working directory, dependencies, build artifacts, etc - completely configurable via an auto-generating per-project setup hook.
+Run multiple Claude agents in parallel on the same repo — each in its own git worktree with isolated working directory, dependencies, build artifacts, etc.
 
 ## Why
 
@@ -14,13 +14,13 @@ cmux wraps the worktree lifecycle into a single simple command and makes it effo
 
 ## Install
 
-### Quickstart
+### Easy install
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/craigsc/cmux/main/install.sh | sh
 ```
 
-### Manual
+### Or manual install
 
 1. Download `cmux.sh`
 2. Source it in your shell config (`~/.bashrc` or `~/.zshrc`):
@@ -74,7 +74,7 @@ cmux rm feature-foo
 
 When `cmux new` creates a worktree, it looks for an executable `.cmux/setup` script in the new worktree. This runs any project-specific setup — installing dependencies, symlinking secrets, generating code, etc.
 
-Create `.cmux/setup` in your repo:
+Create `.cmux/setup` for your repo by running `cmux init` or creating one manually:
 
 ```bash
 #!/bin/bash
