@@ -1,0 +1,14 @@
+#!/bin/bash
+# Example .cmux/setup hook for a Node.js project
+# Called by `cmux new` after creating the worktree
+#
+# Place this file at: <your-repo>/.cmux/setup
+# Make it executable:  chmod +x .cmux/setup
+
+REPO_ROOT="$(git rev-parse --git-common-dir | xargs dirname)"
+
+# Symlink secrets (not in git)
+ln -sf "$REPO_ROOT/.dev.vars" .dev.vars
+
+# Install dependencies and generate Prisma client
+npm ci && npx prisma generate
