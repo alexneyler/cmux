@@ -1,6 +1,6 @@
-# COPILOT.md
+# AGENTS.md
 
-This file provides guidance to GitHub Copilot CLI when working with code in this repository.
+This file provides guidance to AI coding agents when working with code in this repository.
 
 ## What is cmux
 
