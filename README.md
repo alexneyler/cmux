@@ -1,6 +1,6 @@
 # cmux — tmux for GitHub Copilot CLI
 
-Worktree lifecycle manager for parallel [GitHub Copilot CLI](https://docs.github.com/en/copilot) sessions.
+Worktree lifecycle manager for parallel [GitHub Copilot CLI](https://docs.github.com/en/copilot) sessions. Fork of the wonderful [cmux for Claude Code](https://github.com/craigsc/cmux)
 
 Run multiple Copilot agents in parallel on the same repo — each in its own git worktree with isolated working directory, dependencies, build artifacts, etc.
 
@@ -15,7 +15,7 @@ cmux wraps the worktree lifecycle into a single simple command and makes it effo
 ## Install
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/craigsc/cmux/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/alexneyler/cmux/main/install.sh | sh
 ```
 
 ## Usage
