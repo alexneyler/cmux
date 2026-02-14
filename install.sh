@@ -32,5 +32,5 @@ else
 fi
 
 echo ""
-echo "cmux installed! To start using it:"
-echo "  source $RC_FILE"
+echo "cmux installed! To apply changes, run:"
+echo "  source ~/.cmux/cmux.sh"

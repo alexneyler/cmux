@@ -15,7 +15,7 @@
 #   cmux update           — Update cmux to the latest version
 #   cmux version          — Show current version
 
-_CMUX_UPDATE_URL="https://raw.githubusercontent.com/craigsc/cmux/main"
+_CMUX_UPDATE_URL="https://raw.githubusercontent.com/alexneyler/cmux/main"
 CMUX_VERSION="unknown"
 [[ -f "$HOME/.cmux/VERSION" ]] && CMUX_VERSION="$(<"$HOME/.cmux/VERSION")"
 
