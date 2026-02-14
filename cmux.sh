@@ -470,8 +470,7 @@ _cmux_init() {
   local tmpfile
   tmpfile="$(mktemp)" || { echo "Failed to create temp file"; return 1; }
 
-  printf "Analyzing repo to generate .cmux/setup...  "
-  echo ""
+  printf "Analyzing repo to generate .cmux/setup...\n"
   echo "Note: Running Copilot with all tools allowed (--yolo) to analyze your repo."
   mkdir -p "$target_dir/.cmux"
 
