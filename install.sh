@@ -2,7 +2,7 @@
 # cmux installer — run via: curl -fsSL <url> | sh
 set -e
 
-REPO="craigsc/cmux"
+REPO="alexneyler/cmux"
 BRANCH="main"
 RAW_BASE="https://raw.githubusercontent.com/$REPO/$BRANCH"
 
