@@ -471,6 +471,8 @@ _cmux_init() {
   tmpfile="$(mktemp)" || { echo "Failed to create temp file"; return 1; }
 
   printf "Analyzing repo to generate .cmux/setup...  "
+  echo ""
+  echo "Note: Running Copilot with all tools allowed (--yolo) to analyze your repo."
   mkdir -p "$target_dir/.cmux"
 
   local prompt
@@ -508,7 +510,7 @@ PROMPT
   local copilot_pid
   _cmux_spinner_start
   [[ -n "$ZSH_VERSION" ]] && setopt localoptions nomonitor
-  copilot -p "$prompt" < /dev/null > "$tmpfile" 2>/dev/null &
+  copilot --yolo -p "$prompt" < /dev/null > "$tmpfile" 2>/dev/null &
   copilot_pid=$!
 
   # Ctrl+C: kill copilot, stop spinner, clean up
@@ -582,7 +584,7 @@ PROMPT
         tmpfile="$(mktemp)"
         _cmux_spinner_start
         [[ -n "$ZSH_VERSION" ]] && setopt localoptions nomonitor
-        copilot -p "$prompt" < /dev/null > "$tmpfile" 2>/dev/null &
+        copilot --yolo -p "$prompt" < /dev/null > "$tmpfile" 2>/dev/null &
         copilot_pid=$!
         trap 'kill $copilot_pid 2>/dev/null; wait $copilot_pid 2>/dev/null; _cmux_spinner_stop; rm -f "$tmpfile"; trap - INT; printf "\nAborted.\n"; return 130' INT
         if ! wait "$copilot_pid"; then
