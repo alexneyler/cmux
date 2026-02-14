@@ -1,17 +1,17 @@
-# cmux — Claude Multiplexer
+# cmux — Copilot Multiplexer
 #
-# Worktree lifecycle manager for parallel Claude Code sessions.
+# Worktree lifecycle manager for parallel GitHub Copilot CLI sessions.
 # Generic core with project-specific setup via .cmux/setup hook.
 #
 # Commands:
-#   cmux new <branch>     — Create worktree, run setup hook, launch claude
-#   cmux start <branch>   — Launch claude -c in an existing worktree
+#   cmux new <branch>     — Create worktree, run setup hook, launch copilot
+#   cmux start <branch>   — Launch copilot --continue in an existing worktree
 #   cmux cd [branch]      — cd into worktree (no args = repo root)
 #   cmux ls               — List worktrees
 #   cmux merge [branch]   — Merge worktree branch into main checkout
 #   cmux rm [branch]      — Remove worktree (no args = current worktree)
 #   cmux rm --all         — Remove ALL worktrees (requires confirmation)
-#   cmux init [--replace] — Generate .cmux/setup hook using Claude
+#   cmux init [--replace] — Generate .cmux/setup hook using Copilot
 #   cmux update           — Update cmux to the latest version
 #   cmux version          — Show current version
 
@@ -38,14 +38,14 @@ cmux() {
     *)
       echo "Usage: cmux <new|start|cd|ls|merge|rm|init|update> [branch]"
       echo ""
-      echo "  new <branch>     Create worktree, run setup hook, launch claude"
-      echo "  start <branch>   Launch claude -c in existing worktree"
+      echo "  new <branch>     Create worktree, run setup hook, launch copilot"
+      echo "  start <branch>   Launch copilot --continue in existing worktree"
       echo "  cd [branch]      cd into worktree (no args = repo root)"
       echo "  ls               List worktrees"
       echo "  merge [branch]   Merge worktree branch into main checkout"
       echo "  rm [branch]      Remove worktree (no args = current)"
       echo "  rm --all         Remove ALL worktrees (requires confirmation)"
-      echo "  init [--replace] Generate .cmux/setup hook using Claude"
+      echo "  init [--replace] Generate .cmux/setup hook using Copilot"
       echo "  update           Update cmux to the latest version"
       echo "  version          Show current version"
       return 1
@@ -181,7 +181,7 @@ _cmux_new() {
   fi
 
   echo "Worktree ready: $worktree_dir"
-  claude
+  copilot
 }
 
 _cmux_start() {
@@ -204,7 +204,7 @@ _cmux_start() {
   fi
 
   cd "$worktree_dir"
-  claude -c
+  copilot --continue
 }
 
 _cmux_cd() {
@@ -451,8 +451,8 @@ _cmux_init() {
   local repo_root
   repo_root="$(_cmux_repo_root)" || { echo "Not in a git repo"; return 1; }
 
-  if ! command -v claude &>/dev/null; then
-    echo "claude CLI not found. Install it: https://docs.anthropic.com/en/docs/claude-code"
+  if ! command -v copilot &>/dev/null; then
+    echo "copilot CLI not found. Install it: https://docs.github.com/en/copilot"
     return 1
   fi
 
@@ -473,15 +473,14 @@ _cmux_init() {
   printf "Analyzing repo to generate .cmux/setup...  "
   mkdir -p "$target_dir/.cmux"
 
-  local system_prompt
-  system_prompt="$(cat <<'SYSPROMPT'
-You generate bash scripts. Output ONLY the script itself — no markdown fences, no prose, no explanation. The first line of your response must be #!/bin/bash. Do not wrap the script in ``` code blocks.
-SYSPROMPT
-  )"
-
   local prompt
   prompt="$(cat <<'PROMPT'
 Generate a .cmux/setup script for this repo. This script runs after a git worktree is created, from within the new worktree directory.
+
+IMPORTANT INSTRUCTIONS:
+- Output ONLY the script itself — no markdown fences, no prose, no explanation
+- The first line of your response must be #!/bin/bash
+- Do not wrap the script in ``` code blocks
 
 Rules:
 - Start with #!/bin/bash
@@ -506,17 +505,17 @@ IMPORTANT: Output ONLY the raw bash script. The very first characters of your re
 PROMPT
   )"
 
-  local claude_pid
+  local copilot_pid
   _cmux_spinner_start
   [[ -n "$ZSH_VERSION" ]] && setopt localoptions nomonitor
-  claude -p --system-prompt "$system_prompt" "$prompt" < /dev/null > "$tmpfile" 2>/dev/null &
-  claude_pid=$!
+  copilot -p "$prompt" < /dev/null > "$tmpfile" 2>/dev/null &
+  copilot_pid=$!
 
-  # Ctrl+C: kill claude, stop spinner, clean up
-  trap 'kill $claude_pid 2>/dev/null; wait $claude_pid 2>/dev/null; _cmux_spinner_stop; rm -f "$tmpfile"; trap - INT; printf "\nAborted.\n"; return 130' INT
+  # Ctrl+C: kill copilot, stop spinner, clean up
+  trap 'kill $copilot_pid 2>/dev/null; wait $copilot_pid 2>/dev/null; _cmux_spinner_stop; rm -f "$tmpfile"; trap - INT; printf "\nAborted.\n"; return 130' INT
 
   local raw_output
-  if ! wait "$claude_pid"; then
+  if ! wait "$copilot_pid"; then
     _cmux_spinner_stop
     rm -f "$tmpfile"
     trap - INT
@@ -583,10 +582,10 @@ PROMPT
         tmpfile="$(mktemp)"
         _cmux_spinner_start
         [[ -n "$ZSH_VERSION" ]] && setopt localoptions nomonitor
-        claude -p --system-prompt "$system_prompt" "$prompt" < /dev/null > "$tmpfile" 2>/dev/null &
-        claude_pid=$!
-        trap 'kill $claude_pid 2>/dev/null; wait $claude_pid 2>/dev/null; _cmux_spinner_stop; rm -f "$tmpfile"; trap - INT; printf "\nAborted.\n"; return 130' INT
-        if ! wait "$claude_pid"; then
+        copilot -p "$prompt" < /dev/null > "$tmpfile" 2>/dev/null &
+        copilot_pid=$!
+        trap 'kill $copilot_pid 2>/dev/null; wait $copilot_pid 2>/dev/null; _cmux_spinner_stop; rm -f "$tmpfile"; trap - INT; printf "\nAborted.\n"; return 130' INT
+        if ! wait "$copilot_pid"; then
           _cmux_spinner_stop
           rm -f "$tmpfile"
           trap - INT
@@ -667,8 +666,8 @@ _cmux_worktree_names() {
 if [[ -n "$ZSH_VERSION" ]]; then
   _cmux_zsh_complete() {
     local -a subcmds=(
-      'new:Create worktree and launch claude'
-      'start:Launch claude in existing worktree'
+      'new:Create worktree and launch copilot'
+      'start:Launch copilot in existing worktree'
       'cd:cd into worktree'
       'ls:List worktrees'
       'merge:Merge worktree branch into main'

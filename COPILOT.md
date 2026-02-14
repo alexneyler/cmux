@@ -1,10 +1,10 @@
-# CLAUDE.md
+# COPILOT.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to GitHub Copilot CLI when working with code in this repository.
 
 ## What is cmux
 
-cmux is a pure Bash shell tool that manages git worktree lifecycles for running parallel Claude Code sessions. Each worktree gets its own isolated working directory so multiple Claude agents can work on the same repo simultaneously.
+cmux is a pure Bash shell tool that manages git worktree lifecycles for running parallel GitHub Copilot CLI sessions. Each worktree gets its own isolated working directory so multiple Copilot agents can work on the same repo simultaneously.
 
 ## Architecture
 
@@ -21,7 +21,7 @@ cmux is a pure Bash shell tool that manages git worktree lifecycles for running 
 - Branch name sanitization: `feature/foo` → `feature-foo` for directory names
 - Worktrees live under `.worktrees/<safe-branch-name>/` in the repo root
 
-**Setup hook system:** `.cmux/setup` is an executable bash script that runs after worktree creation. It handles project-specific init (symlink secrets, install deps, codegen). `cmux init` uses Claude CLI (`claude -p`) to auto-generate this hook.
+**Setup hook system:** `.cmux/setup` is an executable bash script that runs after worktree creation. It handles project-specific init (symlink secrets, install deps, codegen). `cmux init` uses Copilot CLI (`copilot -p`) to auto-generate this hook.
 
 ## Key files
 

@@ -1,16 +1,16 @@
-# cmux — tmux for Claude Code
+# cmux — tmux for GitHub Copilot
 
-Worktree lifecycle manager for parallel [Claude Code](https://docs.anthropic.com/en/docs/claude-code) sessions.
+Worktree lifecycle manager for parallel [GitHub Copilot CLI](https://docs.github.com/en/copilot) sessions.
 
-Run multiple Claude agents in parallel on the same repo — each in its own git worktree with isolated working directory, dependencies, build artifacts, etc.
+Run multiple Copilot agents in parallel on the same repo — each in its own git worktree with isolated working directory, dependencies, build artifacts, etc.
 
 ## Why
 
 Because you wanna go fast without losing your goddamn mind.
 
-Claude Code works best when it has full ownership of the working directory. When you want multiple agents working on different tasks simultaneously, you need separate checkouts. Git worktrees are the perfect primitive for this — they share the same `.git` database but give each agent its own directory tree.
+GitHub Copilot CLI works best when it has full ownership of the working directory. When you want multiple agents working on different tasks simultaneously, you need separate checkouts. Git worktrees are the perfect primitive for this — they share the same `.git` database but give each agent its own directory tree.
 
-cmux wraps the worktree lifecycle into a single simple command and makes it effortless to manage the complete worktree lifecycle so Claude can focus on what it does best.
+cmux wraps the worktree lifecycle into a single simple command and makes it effortless to manage the complete worktree lifecycle so Copilot can focus on what it does best.
 
 ## Install
 
@@ -22,13 +22,13 @@ curl -fsSL https://raw.githubusercontent.com/craigsc/cmux/main/install.sh | sh
 
 ```
 
-cmux new <branch> — Create worktree, run setup hook, launch claude
-cmux start <branch> — Launch claude in existing worktree
+cmux new <branch> — Create worktree, run setup hook, launch copilot
+cmux start <branch> — Launch copilot in existing worktree
 cmux cd [branch] — cd into worktree (no args = repo root)
 cmux ls — List worktrees
 cmux merge [branch] — Merge worktree branch into main checkout
 cmux rm [branch] — Remove worktree (no args = current)
-cmux init — Generate .cmux/setup hook using Claude
+cmux init — Generate .cmux/setup hook using Copilot
 cmux update — Update cmux to the latest version
 cmux version — Show current version
 
@@ -46,7 +46,7 @@ cmux new feature-bar
 # List project worktrees
 cmux ls
 
-# Jump directly back into previous Claude Code session
+# Jump directly back into previous Copilot session
 cmux start feature-foo
 
 # cd into a worktree folder
@@ -90,7 +90,7 @@ See [`examples/`](examples/) for more.
 
 ### `cmux init`
 
-Don't want to write the setup hook yourself? Run `cmux init` in your repo and Claude will analyze the project and generate `.cmux/setup` for you:
+Don't want to write the setup hook yourself? Run `cmux init` in your repo and Copilot will analyze the project and generate `.cmux/setup` for you:
 
 ```sh
 cmux init
