@@ -167,16 +167,9 @@ _cmux_new() {
       "$repo_root/.cmux/setup"
       echo "Tip: commit .cmux/setup so it's available in new worktrees automatically."
     else
-      echo "No .cmux/setup found — worktree will skip project-specific setup."
-      printf "Run 'cmux init' to generate one? (y/N) "
-      read -r reply
-      if [[ "$reply" =~ ^[Yy]$ ]]; then
-        _cmux_init
-        if [[ -x "$repo_root/.cmux/setup" ]]; then
-          echo "Running .cmux/setup..."
-          "$repo_root/.cmux/setup"
-        fi
-      fi
+      echo "WARNING: No .cmux/setup found — worktree will skip project-specific setup."
+      echo "To set up a .cmux/setup hook, run 'cmux init' to auto-generate one,"
+      echo "or create .cmux/setup manually. See: https://github.com/alexneyler/cmux#project-setup-hook"
     fi
   fi
 
