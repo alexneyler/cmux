@@ -1,4 +1,4 @@
-# cmux — tmux for GitHub Copilot
+# cmux — tmux for GitHub Copilot CLI
 
 Worktree lifecycle manager for parallel [GitHub Copilot CLI](https://docs.github.com/en/copilot) sessions.
 
