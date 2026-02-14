@@ -452,7 +452,7 @@ _cmux_init() {
   repo_root="$(_cmux_repo_root)" || { echo "Not in a git repo"; return 1; }
 
   if ! command -v copilot &>/dev/null; then
-    echo "copilot CLI not found. Install it: https://docs.github.com/en/copilot"
+    echo "copilot CLI not found. Install it: https://docs.github.com/copilot/how-tos/set-up/install-copilot-cli"
     return 1
   fi
 
